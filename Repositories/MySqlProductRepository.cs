@@ -63,9 +63,8 @@ public class MySqlProductRepository : IProductRepository
        reader.GetString("name"),
        reader.GetDecimal("price"),
        reader.GetInt32("quantity"));
+      product.Status = (Product.ProductStatus)reader.GetInt32("status");
      }
-
-     Status = (Product.ProductStatus)reader.GetInt32("status");
     }
    }
   }
