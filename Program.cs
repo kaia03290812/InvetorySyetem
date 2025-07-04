@@ -1,5 +1,6 @@
 ﻿using System.Text;
 using InventorySyetem.Repositories;
+using InventorySyetem.Services;
 
 internal class Program
 {
@@ -8,15 +9,19 @@ internal class Program
  private static void Main(string[] args)
  {
   Console.OutputEncoding = Encoding.UTF8;
+  Console.InputEncoding = Encoding.UTF8;
+
 
   const string MYSQL_CONNECTION_STRING =
    "server=localhost;port=3306;Database=inventory_db;User Id=root;Password=nm5959666";
-
-  
   productRepository = new MySqlProductRepository(MYSQL_CONNECTION_STRING);
+  var inventoryService = new InventoryService(productRepository);
+
 
   RunMenu();
+  return;
  }
+
 
  private static void RunMenu()
  {
@@ -24,7 +29,6 @@ internal class Program
   {
    DisplayMenu();
    var input = Console.ReadLine();
-
    switch (input)
    {
     case "1":
@@ -93,23 +97,17 @@ internal class Program
  private static void GetAllProducts()
  {
   Console.WriteLine("\n--- 所有產品列表 ---");
-  var products = productRepository.GetAllProducts();
-
-  if (products != null && products.Any())
+  var products = InventoryService.GetAllProducts();
+  Console.WriteLine("--------------------------------------------------");
+  Console.WriteLine("ID | Name | Price | Quantity | Status");
+  Console.WriteLine("--------------------------------------------------");
+  foreach (var product in products) Console.WriteLine(product);
   {
+   Console.WriteLine(products);
    Console.WriteLine("--------------------------------------------------");
-   Console.WriteLine("ID | Name | Price | Quantity | Status");
-   Console.WriteLine("--------------------------------------------------");
-
-   foreach (var product in products) Console.WriteLine(product);
-
-   Console.WriteLine("--------------------------------------------------");
-  }
-  else
-  {
-   Console.WriteLine("目前沒有任何產品資料。");
   }
  }
+
 
  private static void SearchProduct()
  {
