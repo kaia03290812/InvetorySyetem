@@ -1,4 +1,5 @@
 ﻿using InventorySyetem.Models;
+using InventorySyetem.Utils;
 using InventorySyetem1.Repositories;
 
 namespace InventorySyetem.Services;
@@ -16,8 +17,10 @@ public class InventoryService
  {
   try
   {
+   var emailNotifier = new EmailNotifier();
+   var emailServise = new NotificationService(emailNotifier);
    //呼叫介面,而非實作
-   var products = _productRepository.GetAllProducts();
+   List<Product> products = _productRepository.GetAllProducts();
    if (!products.Any()) Console.WriteLine("No products found");
 
    return products;

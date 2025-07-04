@@ -1,9 +1,11 @@
 ﻿using System.Text;
 using InventorySyetem.Repositories;
 using InventorySyetem.Services;
+using InventorySyetem.Utils;
 
 internal class Program
 {
+ private static object emailService;
  private static MySqlProductRepository productRepository;
 
  private static void Main(string[] args)
@@ -11,11 +13,13 @@ internal class Program
   Console.OutputEncoding = Encoding.UTF8;
   Console.InputEncoding = Encoding.UTF8;
 
-
   const string MYSQL_CONNECTION_STRING =
    "server=localhost;port=3306;Database=inventory_db;User Id=root;Password=nm5959666";
   productRepository = new MySqlProductRepository(MYSQL_CONNECTION_STRING);
   var inventoryService = new InventoryService(productRepository);
+
+  var emailNotifier = new EmailNotifier();
+  var emailService = new NotificationService(emailNotifier);
 
 
   RunMenu();
@@ -101,11 +105,14 @@ internal class Program
   Console.WriteLine("--------------------------------------------------");
   Console.WriteLine("ID | Name | Price | Quantity | Status");
   Console.WriteLine("--------------------------------------------------");
-  foreach (var product in products) Console.WriteLine(product);
+  foreach (var product in products)
   {
    Console.WriteLine(products);
-   Console.WriteLine("--------------------------------------------------");
   }
+
+  Console.WriteLine("--------------------------------------------------");
+
+  // emailService.NotifyUser("kaia", "查詢已完成");
  }
 
 
