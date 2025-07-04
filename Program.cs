@@ -12,7 +12,7 @@ internal class Program
   const string MYSQL_CONNECTION_STRING =
    "server=localhost;port=3306;Database=inventory_db;User Id=root;Password=nm5959666";
 
-  // ✅ 正確初始化 repository
+  
   productRepository = new MySqlProductRepository(MYSQL_CONNECTION_STRING);
 
   RunMenu();
