@@ -14,6 +14,35 @@ Console.InputEncoding = Encoding.UTF8;
 //pwd: mysql使用者密碼
 const string MYSQL_CONNECTION_STRING =
  "server=localhost;port=3306;Database=inventory_db;User Id=root;Password=nm5959666";
+var connectionString = "";
+var configFile = "appsettings.ini";
+if (File.Exists(configFile))
+{
+ Console.WriteLine($"Reading {configFile}file");
+ try
+ {
+  ReadFile(configFile);
+
+  void ReadFile(string s)
+  {
+   {
+    foreach (var line in File.ReadLines(s)) Console.WriteLine(line);
+   }
+  }
+ }
+ catch (Exception e)
+ {
+  Console.WriteLine($"錯誤:讀取配置檔案失敗:{e}");
+  connectionString = MYSQL_CONNECTION_STRING;
+ }
+}
+else
+{
+ Console.WriteLine($"錯誤:配置檔案{configFile}不存在");
+ connectionString = MYSQL_CONNECTION_STRING;
+}
+
+
 var productRepository = new MySqlProductRepository(MYSQL_CONNECTION_STRING);
 var inventoryService = new InventoryService(productRepository);
 
@@ -42,6 +71,9 @@ void RunMenu()
    case "3":
     AddProduct();
     break;
+   case "4":
+    UpdatProduct();
+    break;
    case "0":
     Console.WriteLine("Goodbye !");
     return;
@@ -59,6 +91,7 @@ void DisplayMenu()
  Console.WriteLine("1. 查看所有產品");
  Console.WriteLine("2. 查詢產品");
  Console.WriteLine("3. 新增產品");
+ Console.WriteLine("4. 更新產品");
  Console.WriteLine("0. 離開");
 }
 
@@ -85,8 +118,8 @@ void SearchProduct()
 {
  Console.WriteLine("輸入欲查詢的產品編號");
  var input = ReadIntLine();
- var product = productRepository.GetProductById(input);
-
+ // var product = productRepository.GetProductById(input);
+ var product = inventoryService.GetProductById(input);
  if (product != null)
  {
   Console.WriteLine("-----------------------------------------------");
@@ -109,8 +142,34 @@ void AddProduct()
  var price = ReadDecimalLine();
  Console.WriteLine("輸入產品數量：");
  var quantity = ReadIntLine();
- productRepository.AddProduct(name, price, quantity);
- smsService.NotifyUser("kaia", "新增產品成成功");
+ inventoryService.AddProduct(name, price, quantity);
+ // productRepository.AddProduct(name, price, quantity);
+ // smsService.NotifyUser("kaia", "新增產品成成功");
+}
+
+void UpdatProduct()
+{
+ Console.WriteLine("請輸入要更新的產品編號：");
+ var id = ReadIntLine();
+ var product = inventoryService.GetProductById(id);
+
+ if (product == null)
+ {
+  Console.WriteLine("查無此產品！");
+  return;
+ }
+
+ Console.WriteLine("輸入產品名稱：");
+ var name = Console.ReadLine();
+
+ Console.WriteLine("輸入產品價格：");
+ var price = ReadDecimalLine();
+
+ Console.WriteLine("輸入產品數量：");
+ var quantity = ReadIntLine();
+
+ inventoryService.UpdatProduct(product, name, price, quantity);
+ Console.WriteLine("產品更新成功！");
 }
 
 int ReadInt(string input)
@@ -124,8 +183,6 @@ int ReadInt(string input)
   Console.WriteLine("請輸入有效數字。");
   return 0;
  }
-
- smsNotifier.SendNotification("", "");
 }
 
 int ReadIntLine(int defaultValue = 0)
@@ -134,7 +191,6 @@ int ReadIntLine(int defaultValue = 0)
  {
   var input = Console.ReadLine();
   if (string.IsNullOrWhiteSpace(input) && defaultValue != 0) return defaultValue;
-
   //string parsing to int 
   if (int.TryParse(input, out var value))
    return value;

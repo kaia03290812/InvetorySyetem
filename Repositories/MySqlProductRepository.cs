@@ -30,13 +30,14 @@ public class MySqlProductRepository : IProductRepository
     {
      while (reader.Read())
      {
-      products.Add(new Product(reader.GetInt32("id"),
+      var product = new Product(
+       reader.GetInt64("id"),
        reader.GetString("name"),
        reader.GetDecimal("price"),
-       reader.GetInt32("quantity")));
-      {
-       var status = (Product.ProductStatus)reader.GetInt32("status");
-      }
+       reader.GetInt32("quantity")
+      );
+      product.Status = (Product.ProductStatus)reader.GetInt32("status");
+      products.Add(product);
      }
     }
    }
@@ -59,7 +60,7 @@ public class MySqlProductRepository : IProductRepository
     {
      if (reader.Read())
      {
-      product = new Product(reader.GetInt32("id"),
+      product = new Product(reader.GetInt64("id"),
        reader.GetString("name"),
        reader.GetDecimal("price"),
        reader.GetInt32("quantity"));
@@ -70,6 +71,59 @@ public class MySqlProductRepository : IProductRepository
   }
 
   return product;
+ }
+
+ public void AddProduct(Product product)
+ {
+  using (var connection = new MySqlConnection(_connectionString))
+  {
+   connection.Open();
+   var insertSql = @"INSERT INTO products (name, price, quantity, status) 
+                                    values (@name, @price, @quantity, @status)";
+   using (var cmd = new MySqlCommand(insertSql, connection))
+   {
+    cmd.Parameters.AddWithValue("@name", product.Name);
+    cmd.Parameters.AddWithValue("@price", product.Price);
+    cmd.Parameters.AddWithValue("@quantity", product.Quantity);
+    cmd.Parameters.AddWithValue("@status", product.Status);
+    cmd.ExecuteNonQuery();
+   }
+  }
+ }
+
+ public void UpdateProduct(Product product)
+ {
+  using (var connection = new MySqlConnection(_connectionString))
+  {
+   connection.Open();
+   var insertSql = @"UPDATE products SET name=@name,price=@price,quantity=@quantity, status= @status
+WHERE id=@id";
+   using (var cmd = new MySqlCommand(insertSql, connection))
+   {
+    cmd.Parameters.AddWithValue("@id", product.Id);
+    cmd.Parameters.AddWithValue("@name", product.Name);
+    cmd.Parameters.AddWithValue("@price", product.Price);
+    cmd.Parameters.AddWithValue("@quantity", product.Quantity);
+    cmd.Parameters.AddWithValue("@status", product.Status);
+    cmd.ExecuteNonQuery();
+   }
+  }
+ }
+
+ public int GetNextProductId()
+ {
+  using (var connection = new MySqlConnection(_connectionString))
+  {
+   connection.Open();
+   var selectaql = @"SELECT IFNULL(MAX(id),0) FROM products";
+   using (var cmd = new MySqlCommand(selectaql, connection))
+   {
+    var result = Convert.ToInt64(cmd.ExecuteScalar());
+    if (result != 0) return (int)(result + 1);
+
+    return 0;
+   }
+  }
  }
 
  private void InitializeDatabase()
@@ -98,24 +152,6 @@ public class MySqlProductRepository : IProductRepository
    catch (MySqlException e)
    {
     Console.WriteLine($"初始化 MySQL 失敗: {e.Message}");
-   }
-  }
- }
-
- public void AddProduct(string? name, decimal price, int quantity)
- {
-  using (var connection = new MySqlConnection(_connectionString))
-  {
-   connection.Open();
-   var insertSql = @"INSERT INTO products (name, price, quantity, status) 
-                                    values (@name, @price, @quantity, @status)";
-   using (var cmd = new MySqlCommand(insertSql, connection))
-   {
-    cmd.Parameters.AddWithValue("@name", name);
-    cmd.Parameters.AddWithValue("@price", price);
-    cmd.Parameters.AddWithValue("@quantity", quantity);
-    cmd.Parameters.AddWithValue("@status", 1);
-    cmd.ExecuteNonQuery();
    }
   }
  }

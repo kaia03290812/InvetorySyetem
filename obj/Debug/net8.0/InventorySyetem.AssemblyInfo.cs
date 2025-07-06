@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("InventorySyetem")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+8fc834a605b6c23d8419df358d6a8271d72fac5f")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+6a340381a6479464e975b5320cc1be0fa3d469ed")]
 [assembly: System.Reflection.AssemblyProductAttribute("InventorySyetem")]
 [assembly: System.Reflection.AssemblyTitleAttribute("InventorySyetem")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

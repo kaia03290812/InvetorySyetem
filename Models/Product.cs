@@ -13,7 +13,7 @@ public class Product
  {
  }
 
- public Product(int id, string name, decimal price, int quantity)
+ public Product(long id, string name, decimal price, int quantity)
  {
   Id = id;
   Name = name;
@@ -22,7 +22,7 @@ public class Product
   UpdateStatus();
  }
 
- public int Id { get; set; }
+ public long Id { get; set; }
  public string Name { get; set; }
  public decimal Price { get; set; }
  public int Quantity { get; set; }
