@@ -19,6 +19,10 @@ var inventoryService = new InventoryService(productRepository);
 
 var emailNotifier = new EmailNotifier();
 var emailService = new NotificationService(emailNotifier);
+
+var smsNotifier = new SmsNotifier();
+var smsService = new NotificationService(smsNotifier);
+
 RunMenu();
 
 void RunMenu()
@@ -106,6 +110,7 @@ void AddProduct()
  Console.WriteLine("輸入產品數量：");
  var quantity = ReadIntLine();
  productRepository.AddProduct(name, price, quantity);
+ smsService.NotifyUser("kaia", "新增產品成成功");
 }
 
 int ReadInt(string input)
@@ -119,6 +124,8 @@ int ReadInt(string input)
   Console.WriteLine("請輸入有效數字。");
   return 0;
  }
+
+ smsNotifier.SendNotification("", "");
 }
 
 int ReadIntLine(int defaultValue = 0)
