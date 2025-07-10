@@ -88,4 +88,33 @@ public class InventoryService
    Console.WriteLine($"錯誤!更新產品失敗:{e.Message}");
   }
  }
+
+ public List<Product> SearchProduct(string input)
+ {
+  try
+  {
+   List<Product> products = _productRepository.GetAllProducts();
+
+   if (string.IsNullOrWhiteSpace(input)) return products;
+
+   List<Product> results = products.Where(product => product.Name.ToLower().Contains(input.ToLower()))
+    .OrderBy(product => product.Name)
+    .ToList();
+
+
+   if (!results.Any()) Console.WriteLine("No products found");
+
+   return results;
+  }
+  catch (Exception e)
+  {
+   Console.WriteLine($"讀取產品列表失敗: {e.Message}");
+   return new List<Product>();
+  }
+ }
+
+ private bool Keyword(Product product, string input)
+ {
+  return product.Name.ToLower().Contains(input.ToLower());
+ }
 }
